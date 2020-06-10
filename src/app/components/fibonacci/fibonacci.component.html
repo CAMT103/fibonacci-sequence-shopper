@@ -1,0 +1,57 @@
+<div class="row">
+    <div class="col-8">
+        <h4> Sequence <small>template</small> </h4>
+        <hr>
+
+        <form autocomplete="off" #frm="ngForm" (ngSubmit)="DoOperations(frm)"> 
+            <div class="form-group row">
+                <label class="col-2 col-form-label">Limit:</label>
+          
+                <div class="col-8">
+                  <input class="form-control"
+                         type="text"
+                         placeholder="Limit"
+                         Limit="txtLimit"
+                         minlength="3"
+                         required
+                         [ngModel]
+                         [class.is-invalid]="txtLimit.invalid && txtLimit.touched"
+                         #txtLimit="ngModel">
+                    <small *ngIf="txtLimit.invalid && txtLimit.touched"
+                      class="form-text text-danger">Type at least 3 letters</small>
+                </div>
+              </div>
+              <div class="form-group row">
+                <label class="col-2 col-form-label">&nbsp;</label>
+                <div class="input-group col-md-8">
+                  <button type="submit" class="btn btn-outline-primary btn-block">
+                    Validate
+                  </button>
+                </div>
+              </div>
+
+            <div class="form-group row">
+                <label class="col-2 col-form-label">Typical Sequence:</label>
+                
+                <div class="col-8">
+                    {{this.sequenceText}}
+                <!-- <input class="form-control"
+                        type="Sequence"
+                        placeholder="Sequence"
+                        name="txtSequence"
+                        required
+                        [ngModel]
+                        #txtSequence="ngModel"
+                        [class.is-invalid]="txtSequence.invalid && txtSequence.touched"
+                        >
+                <small *ngIf="txtSequence.invalid && txtSequence.touched"
+                        class="form-text text-danger">Sequence is mandatory</small> -->
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="col-4">
+        col-4
+    </div>
+</div>
