@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormGroup, FormBuilder, FormArray, Validators  } from '@angular/forms';
+import { FibonacciSequenceService } from 'src/app/services/fibonacci-sequence.service';
+
 
 @Component({
   selector: 'app-fibonacci',
@@ -8,58 +10,93 @@ import { NgForm } from '@angular/forms';
 })
 export class FibonacciComponent implements OnInit {
 
+  frmItem:FormGroup;
   sequenceArr:number[]= [];
-  sequenceText:string;
+  historicalArr:HistoryDTO[]= [];
+  sequenceText:string = '';
+  lastNumber:number = 0;
 
-  constructor() { }
+  constructor(private _FiboService:FibonacciSequenceService,
+              private _formBuilder:FormBuilder) { }
 
   ngOnInit(): void {
-
+    this.CreateForm();
   }
 
-  GetLastFibonacciNumber = (left:number, right:number, limit:number) =>
-  {
-      if (limit == 0) 
-      {
-          return limit;
-      }
+  get f(){
+    return this.frmItem.controls;
+  }
 
-      return (left + right <= limit) ? this.GetLastFibonacciNumber(right, left + right, limit) : right;
+  get LimitNotValid(){
+    return this.frmItem.get('txtLimit').invalid && this.frmItem.get('txtLimit').touched;
+  }
+
+  CreateForm = ():void => {
+    this.frmItem = this._formBuilder.group({
+      txtLimit    : ['', 
+                    [ Validators.required,
+                      Validators.pattern('^[0-9]*$') ] ]
+    });
   };
 
-  DoFibonacci = (position:number) =>{
 
-    if(position <= 1){
-      return 1;
-    }
-    else{
-      let sum:number = this.DoFibonacci(position-1) + this.DoFibonacci(position-2);
-      return sum;
-    }
-  };
 
-  DoOperations = (frm:NgForm) =>
+  DoFibo = () =>
   {
-    if(frm.invalid)
+    if(this.frmItem.invalid)
     {
-      Object.values( frm.controls ).forEach( control => {
-        control.markAsTouched();
-      });
-
-      return;
+      return Object.values( this.frmItem.controls ).forEach(element => 
+      {
+        if(element instanceof FormGroup)
+        {
+          Object.values( element.controls ).forEach( innerControl => innerControl.markAsTouched());
+        }
+        else
+        {
+          element.markAsTouched();
+        }
+      }); 
     }
-    
-    
-    //console.log("typed: " + frm.controls["txtLimit"].value + "___" + this.GetLastFibonacciNumber(0, 1, frm.control["txtNumber"]));
-    //this.GetLastFibonacciNumber(0, 1, frm.controls["txtLimit"].value)
 
-    this.sequenceArr = [];
     let i:number= 0;
-    while(i < 6){
-      this.sequenceArr.push(this.DoFibonacci(i));
+    let limit:number = this.frmItem.get("txtLimit").value;
+    this.sequenceArr = [];
+    
+    console.log(limit);
+    while(i <= 10 && i <= limit){
+      this.sequenceArr.push(this._FiboService.DoFibonacci(i));
       i++;
     }
+    
     this.sequenceText = this.sequenceArr.join(',');
+    this.lastNumber = this._FiboService.GetLastFibonacciNumber(0, 1, limit)
+    let history:HistoryDTO = new HistoryDTO();
+    history.limit = limit;
+    history.result = this.lastNumber;
+    this.historicalArr.push(history);
   };
 
+  Clear = () =>{
+    this.frmItem.reset();
+    this.sequenceArr = [];
+    this.sequenceText = '';
+    this.lastNumber = 0;
+    this.historicalArr = [];
+  };
+
+
+  keyPress = (event: any) => {
+    const pattern = /[0-9]/;
+
+    let inputChar = String.fromCharCode(event.charCode);
+    if (event.keyCode != 8 && !pattern.test(inputChar)) {
+      event.preventDefault();
+    }
+  }
+
 } // end class
+
+export class HistoryDTO{
+  limit:number;
+  result:number;
+};

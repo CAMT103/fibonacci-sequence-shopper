@@ -1,57 +1,81 @@
-<div class="row">
-    <div class="col-8">
-        <h4> Sequence <small>template</small> </h4>
+<div class="row container animated fadeIn ">
+    <div class="col-9">
+        <h4 class="header animated fadeIn fast">
+            Sequence <small>template</small> 
+        </h4>
         <hr>
 
-        <form autocomplete="off" #frm="ngForm" (ngSubmit)="DoOperations(frm)"> 
-            <div class="form-group row">
-                <label class="col-2 col-form-label">Limit:</label>
+        <form autocomplete="off" [formGroup]="this.frmItem" (ngSubmit)="this.DoFibo()">
+            <div class="form-group row ">
+                <label class="col-4 col-form-label form-control-lg">Digit a number:</label>
           
-                <div class="col-8">
-                  <input class="form-control"
-                         type="text"
-                         placeholder="Limit"
-                         Limit="txtLimit"
-                         minlength="3"
-                         required
-                         [ngModel]
-                         [class.is-invalid]="txtLimit.invalid && txtLimit.touched"
-                         #txtLimit="ngModel">
-                    <small *ngIf="txtLimit.invalid && txtLimit.touched"
-                      class="form-text text-danger">Type at least 3 letters</small>
+                <div class="col-4">
+                  <input class="form-control form-control-lg"
+                         type="number"
+                         placeholder="Type a limit"
+                         formControlName="txtLimit"
+                         [class.is-invalid]="LimitNotValid"
+                         (keyup.enter)="DoFibo()"
+                         (keypress)="keyPress($event)">
+                    
+                    <small *ngIf="LimitNotValid" class="text-danger"> Limit is required and only integers numbers </small>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label class="col-2 col-form-label">&nbsp;</label>
-                <div class="input-group col-md-8">
-                  <button type="submit" class="btn btn-outline-primary btn-block">
-                    Validate
-                  </button>
+
+                <div class="col-4 ">
+                    <button type="submit" class="btn btn-primary btn-block">
+                      VALIDATE
+                    </button>
+                    <button (click)="Clear()" type="button" class="btn btn-outline-secondary btn-block">
+                      Clear
+                    </button>
                 </div>
               </div>
 
             <div class="form-group row">
-                <label class="col-2 col-form-label">Typical Sequence:</label>
-                
-                <div class="col-8">
-                    {{this.sequenceText}}
-                <!-- <input class="form-control"
-                        type="Sequence"
-                        placeholder="Sequence"
-                        name="txtSequence"
-                        required
-                        [ngModel]
-                        #txtSequence="ngModel"
-                        [class.is-invalid]="txtSequence.invalid && txtSequence.touched"
-                        >
-                <small *ngIf="txtSequence.invalid && txtSequence.touched"
-                        class="form-text text-danger">Sequence is mandatory</small> -->
+                <div class="col">
+                    <div class="form-group row text-center">
+                        <div class="col">
+                            <div class="card border-success mb-3" >
+                                <div class="card-header">Last number found in Fibonacci sequence is: </div>
+                                <div class="card-body text-success">
+                                    <h1 class="card-title display-2">{{this.lastNumber}}</h1>
+                                </div>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-light mb-3 text-center" >
+                        <div class="card-header">Typical Sequence: </div>
+                        <div class="card-body">
+                          <h4 class="card-title">{{this.sequenceText}}</h4>
+                            <p class="card-text"><small class="text-muted">
+                                (just up until 10 positions wil be displayed otherwise it will make overflow)
+                                </small>
+                            </p>
+                        </div>
+                      </div>
                 </div>
             </div>
 
         </form>
     </div>
-    <div class="col-4">
-        col-4
+    <div class="col-3">
+        <div class="form-group row text-center">
+            <div class="col">
+                <div class="card bg-light mb-3" >
+                    <div class="card-header">Historical limits:</div>
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr *ngFor="let item of this.historicalArr.reverse(); let i = index;">
+                                <td>{{ i + 1}}</td>
+                                <td>You typed: {{ item.limit }}</td>
+                                <td>Result: {{ item.result }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+            </div>
+        </div>
     </div>
+
 </div>
